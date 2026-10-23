@@ -1,0 +1,360 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  nickname      String?
+  avatarUrl     String?
+  passwordHash  String
+  role          String    // "partner1" | "partner2"
+  birthday      DateTime?
+  favoriteThings String?
+  spotifyProfileUrl String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memories      Memory[]
+  lettersWritten Letter[] @relation("WrittenLetters")
+  lettersReceived Letter[] @relation("ReceivedLetters")
+  sentMessages  ChatMessage[]
+  reasonsWritten ReasonILoveYou[]
+  createdEvents CalendarEvent[]
+  createdTimeline TimelineEvent[]
+  notifications Notification[]
+  songsAdded    Song[]
+  questionAnswers QuestionAnswer[]
+  gameAnswers   GameAnswer[]
+  journalEntries WeeklyJournalEntry[]
+  createdPlans  PlanItem[]
+}
+
+model CoupleSettings {
+  id              String   @id @default("couple-singleton")
+  partner1Name    String   @default("Abdel")
+  partner2Name    String   @default("Nour")
+  anniversaryDate DateTime @default("2026-09-05T00:00:00.000Z")
+  relationshipQuote String @default("Our private little universe.")
+  vaultPinHash    String   @default("$2a$10$w8T0tYlEom13eN7PZ7jZNu0q6x41rV5rYyC5oU6vj9YdZ3e6wP9m2") // default '1409'
+  coverPhotoUrl   String?
+  spotifyPlaylistUrl String? @default("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CoupleIdentity {
+  id               String   @id @default("identity-singleton")
+  ourSong          String?  @default("Until I Found You - Stephen Sanchez")
+  ourNickname      String?  @default("My Soul")
+  ourRestaurant    String?  @default("Sea Gull by the Shore")
+  ourEmoji         String?  @default("❤️✨")
+  ourFavoriteMovie String?  @default("About Time")
+  ourCozyPlace     String?  @default("The corner coffee table by the window")
+  ourCoffeeOrder   String?  @default("One flat white with oat milk, one double espresso")
+  updatedAt        DateTime @updatedAt
+}
+
+model Question {
+  id           String           @id @default(cuid())
+  prompt       String
+  category     String           @default("light") // "light" | "deep" | "relationship"
+  isToday      Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  answers      QuestionAnswer[]
+}
+
+model QuestionAnswer {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answerText String
+  createdAt  DateTime @default(now())
+
+  @@unique([questionId, userId])
+}
+
+model GameItem {
+  id        String       @id @default(cuid())
+  type      String       // "this_or_that" | "guess_my_answer"
+  prompt    String       // e.g. "Vacation style" or "Beach vs Mountains"
+  optionA   String?      // for this_or_that: "Beach 🏖️"
+  optionB   String?      // for this_or_that: "Mountains 🏔️"
+  options   String?      // JSON array for multiple choice guess: ["Beach", "Mountains", "City", "Nature"]
+  category  String       @default("lifestyle")
+  createdAt DateTime     @default(now())
+  answers   GameAnswer[]
+}
+
+model GameAnswer {
+  id              String   @id @default(cuid())
+  gameItemId      String
+  gameItem        GameItem @relation(fields: [gameItemId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  selectedOption  String
+  guessedPartner  String?  // for guess_my_answer: what the user thinks the partner picked
+  createdAt       DateTime @default(now())
+
+  @@unique([gameItemId, userId])
+}
+
+model PlanItem {
+  id                 String    @id @default(cuid())
+  title              String
+  description        String?
+  targetDate         DateTime?
+  location           String?
+  category           String    @default("date") // "date" | "trip" | "experience" | "creative"
+  status             String    @default("planned") // "planned" | "completed"
+  completedAt        DateTime?
+  completedToMemoryId String?
+  createdById        String
+  createdBy          User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model WeeklyJournalEntry {
+  id        String   @id @default(cuid())
+  prompt    String   @default("How was this week for you? What are you grateful for?")
+  content   String
+  weekNumber Int
+  year      Int
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Memory {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  memoryDate  DateTime
+  timeOfDay   String?
+  location    String?
+  mood        String?  // e.g. "joyful", "romantic", "peaceful", "hilarious"
+  tags        String?  // comma-separated or json string
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  photos      String?  // JSON array of strings
+  audioUrl    String?
+  videoUrl    String?
+  songTitle   String?
+  songArtist  String?
+  songUrl     String?
+  isFavorite  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  timelineEvents TimelineEvent[]
+  associatedSongs Song[]
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  eventDate   DateTime
+  year        Int
+  category    String   @default("milestone") // "milestone" | "trip" | "date" | "tiny_moment"
+  location    String?
+  photos      String?  // JSON array
+  songUrl     String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  memoryId    String?
+  memory      Memory?  @relation(fields: [memoryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+}
+
+model Letter {
+  id              String    @id @default(cuid())
+  title           String
+  content         String
+  authorId        String
+  author          User      @relation("WrittenLetters", fields: [authorId], references: [id], onDelete: Cascade)
+  recipientId     String
+  recipient       User      @relation("ReceivedLetters", fields: [recipientId], references: [id], onDelete: Cascade)
+  unlockDate      DateTime?
+  unlockCondition String?   // e.g. "On our second anniversary"
+  isLocked        Boolean   @default(false)
+  isRead          Boolean   @default(false)
+  readAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model OpenWhenEnvelope {
+  id          String    @id @default(cuid())
+  title       String    // e.g. "Open when you're sad", "Open when you miss me"
+  prompt      String    // The cue on the envelope
+  content     String    // The comforting or loving letter inside
+  waxColor    String    @default("gold") // "gold" | "crimson" | "bronze" | "white"
+  sealSymbol  String    @default("heart") // "heart" | "compass" | "rose" | "star"
+  unlockDate  DateTime?
+  isLocked    Boolean   @default(false)
+  isOpened    Boolean   @default(false)
+  openedAt    DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artist      String
+  spotifyUrl  String?
+  youtubeUrl  String?
+  note        String?
+  coverUrl    String?
+  memoryId    String?
+  memory      Memory?  @relation(fields: [memoryId], references: [id], onDelete: SetNull)
+  addedById   String
+  addedBy     User     @relation(fields: [addedById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Place {
+  id          String   @id @default(cuid())
+  name        String
+  city        String?
+  country     String?
+  visitedDate DateTime?
+  description String?
+  photos      String?  // JSON array
+  rating      Int      @default(5)
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+}
+
+model FirstTimeMoment {
+  id          String    @id @default(cuid())
+  category    String    // e.g. "First Date", "First Trip", "First Photo", "First 'I Love You'"
+  title       String
+  momentDate  DateTime?
+  description String?
+  photoUrl    String?
+  isHappened  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}
+
+model ImportantDate {
+  id                 String   @id @default(cuid())
+  title              String
+  date               DateTime
+  isRecurringYearly  Boolean  @default(true)
+  reminderDaysBefore Int      @default(3)
+  note               String?
+  category           String   @default("anniversary") // "anniversary" | "birthday" | "celebration"
+  createdAt          DateTime @default(now())
+}
+
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  startDate   DateTime
+  endDate     DateTime?
+  category    String   @default("date_night") // "date_night" | "trip" | "movie" | "celebration"
+  notes       String?
+  location    String?
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model BucketListItem {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  category    String    @default("adventure")
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  photos      String?   // JSON array
+  createdAt   DateTime  @default(now())
+}
+
+model CoupleGoal {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  targetDate      DateTime?
+  progressPercent Int       @default(0) // 0 - 100
+  status          String    @default("in_progress") // "planned" | "in_progress" | "achieved"
+  category        String    @default("shared_dream")
+  createdAt       DateTime  @default(now())
+}
+
+model FutureMessage {
+  id          String    @id @default(cuid())
+  authorName  String
+  message     String
+  writtenDate DateTime  @default(now())
+  deliverDate DateTime
+  isDelivered Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model InsideJoke {
+  id                  String   @id @default(cuid())
+  title               String
+  punchlineOrContext  String
+  jokeDate            DateTime?
+  photoUrl            String?
+  laughCount          Int      @default(1)
+  createdAt           DateTime @default(now())
+}
+
+model ReasonILoveYou {
+  id         String   @id @default(cuid())
+  orderIndex Int      @unique
+  reason     String
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model ChatMessage {
+  id        String    @id @default(cuid())
+  senderId  String
+  sender    User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  text      String?
+  mediaUrl  String?
+  mediaType String?   // "image" | "audio" | "video"
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  reactions String?   // JSON map e.g. {"❤️": ["user1"], "😂": ["user2"]}
+  replyToId String?
+  isPinned  Boolean   @default(false)
+  savedToMemoryId String?
+  createdAt DateTime  @default(now())
+}
+
+model VaultItem {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   @default("photo") // "photo" | "letter" | "note" | "video"
+  secretText  String?
+  mediaUrls   String?  // JSON array
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("reminder") // "message" | "reminder" | "letter" | "anniversary"
+  isRead    Boolean  @default(false)
+  linkUrl   String?
+  createdAt DateTime @default(now())
+}

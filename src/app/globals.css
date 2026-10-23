@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  /* Romantic Warm Cashmere & Sand Glow (1:1 with Reference Mockup) */
+  --bg-main: transparent;
+  --bg-card: rgba(237, 228, 220, 0.88);
+  --bg-elevated: rgba(226, 215, 204, 0.92);
+  --text-primary: #25201C;
+  --text-secondary: #5C524A;
+  --text-muted: #8E8278;
+  --accent-primary: #C29352;
+  --accent-secondary: #D4A853;
+  --accent-deep: #A0782A;
+  --border-subtle: rgba(255, 255, 255, 0.45);
+
+  /* Sidebar */
+  --sidebar-bg: #0E1117;
+  --sidebar-text: #F3F4F6;
+  --sidebar-text-muted: #94A3B8;
+  --sidebar-active: rgba(212, 168, 83, 0.16);
+
+  color-scheme: light;
+}
+
+.dark {
+  /* Romantic Midnight Sanctuary: Deep Obsidian, Warm Candlelight & Amber Gold */
+  --bg-main: transparent;
+  --bg-card: rgba(18, 21, 29, 0.78);
+  --bg-elevated: rgba(23, 28, 38, 0.85);
+  --text-primary: #FAF5F0;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --accent-primary: #D4A853;
+  --accent-secondary: #E5B869;
+  --accent-deep: #A0782A;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --sidebar-bg: #0E1117;
+  --sidebar-text: #F3F4F6;
+  --sidebar-text-muted: #94A3B8;
+  --sidebar-active: rgba(212, 168, 83, 0.16);
+
+  color-scheme: dark;
+}
+
+body {
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  transition: color 450ms ease, border-color 450ms ease;
+}
+
+.dark body,
+html.dark body {
+  background-color: transparent;
+}
+
+/* Elegant Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 168, 83, 0.28);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 168, 83, 0.5);
+}
+
+/* Selection */
+::selection {
+  background: rgba(194, 147, 82, 0.3);
+  color: #FFFFFF;
+}
+
+/* Glassy Reusable Classes (Exact 1:1 Match to Mockup) */
+.quiet-card {
+  background-color: var(--bg-card);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  transition: all 250ms ease;
+}
+
+.dark .quiet-card {
+  background-color: rgba(18, 21, 29, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.quiet-card:hover {
+  border-color: rgba(194, 147, 82, 0.45);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+
+.dark .quiet-card:hover {
+  border-color: rgba(212, 168, 83, 0.35);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.quiet-input {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: 12px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.dark .quiet-input {
+  background-color: rgba(23, 28, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quiet-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.2);
+}
+
+.quiet-btn-primary {
+  background-color: #C29352;
+  color: #FFFFFF;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+
+.quiet-btn-primary:hover {
+  background-color: #AA7E3F;
+  box-shadow: 0 4px 14px rgba(194, 147, 82, 0.4);
+  transform: translateY(-1px);
+}
+
+.quiet-btn-outline {
+  background-color: rgba(226, 214, 203, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #25201C;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+
+.quiet-btn-outline:hover {
+  background-color: rgba(216, 202, 190, 0.9);
+  border-color: #C29352;
+}
+
+.dark .quiet-btn-outline {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FAF5F0;
+}
+
+.dark .quiet-btn-outline:hover {
+  background-color: rgba(212, 168, 83, 0.15);
+  border-color: #D4A853;
+}
+
+.font-script {
+  font-family: var(--font-script);
+}
+
+/* Micro-transition for live timer seconds tick */
+@keyframes secondTick {
+  0% {
+    opacity: 0.45;
+    transform: translateY(-3px) scale(1.05);
+    filter: drop-shadow(0 0 6px rgba(212, 168, 83, 0.5));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0px transparent);
+  }
+}
+
+.animate-second-tick {
+  display: inline-block;
+  animation: secondTick 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Apple-style handwriting ink spread and glowing stylus pen animations */
+@keyframes penGlow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(212, 168, 83, 0.9), 0 0 3px rgba(255, 255, 255, 0.9);
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 0 4px rgba(212, 168, 83, 0.4);
+    transform: scaleY(0.85);
+  }
+}
+
+.animate-pen-glow {
+  animation: penGlow 650ms ease-in-out infinite;
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-heart-pop {
+  animation: heartPop 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+

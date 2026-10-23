@@ -1,0 +1,14 @@
+{
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/questions/route": "app/api/questions/route.js",
+  "/api/chat/route": "app/api/chat/route.js",
+  "/api/games/route": "app/api/games/route.js",
+  "/api/plans/route": "app/api/plans/route.js",
+  "/api/firsts/route": "app/api/firsts/route.js",
+  "/api/identity/route": "app/api/identity/route.js",
+  "/api/vault/route": "app/api/vault/route.js",
+  "/page": "app/page.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/memories/route": "app/api/memories/route.js",
+  "/api/reasons/route": "app/api/reasons/route.js"
+}
